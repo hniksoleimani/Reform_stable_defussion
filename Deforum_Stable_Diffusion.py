@@ -5,7 +5,6 @@
 """
 # **Deforum Stable Diffusion v0.5**
 [Stable Diffusion](https://github.com/CompVis/stable-diffusion) by Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, Björn Ommer and the [Stability.ai](https://stability.ai/) Team. [K Diffusion](https://github.com/crowsonkb/k-diffusion) by [Katherine Crowson](https://twitter.com/RiversHaveWings). You need to get the ckpt file and put it on your Google Drive first to use this. It can be downloaded from [HuggingFace](https://huggingface.co/CompVis/stable-diffusion).
-
 Notebook by [deforum](https://discord.gg/upmXXsrwZc)
 """
 
@@ -15,18 +14,12 @@ Notebook by [deforum](https://discord.gg/upmXXsrwZc)
 # !! }}
 """
 By using this Notebook, you agree to the following Terms of Use, and license:
-
 **Stablity.AI Model Terms of Use**
-
 This model is open access and available to all, with a CreativeML OpenRAIL-M license further specifying rights and usage.
-
 The CreativeML OpenRAIL License specifies:
-
 You can't use the model to deliberately produce nor share illegal or harmful outputs or content
 CompVis claims no rights on the outputs you generate, you are free to use them and are accountable for their use which must not go against the provisions set in the license
 You may re-distribute the weights and use the model commercially and/or as a service. If you do, please be aware you have to include the same use restrictions as the ones in the license and share a copy of the CreativeML OpenRAIL-M to all your users (please read the license entirely and carefully)
-
-
 Please read the full license here: https://huggingface.co/spaces/CompVis/stable-diffusion-license
 """
 
@@ -57,10 +50,12 @@ print(sub_p_res)
 # ask for the link
 print("Local Path Variables:\n")
 
-models_path = "/content/models" #@param {type:"string"}
-output_path = "/content/output" #@param {type:"string"}
-
+# models_path = "/content/models" #@param {type:"string"}
+# output_path = "/content/output" #@param {type:"string"}
+models_path = "./checkpoints" #@param {type:"string"}
+output_path = "./output" #@param {type:"string"}
 #@markdown **Google Drive Path Variables (Optional)**
+"""
 mount_google_drive = True #@param {type:"boolean"}
 force_remount = False
 
@@ -76,7 +71,7 @@ if mount_google_drive:
     except:
         print("...error mounting drive or with drive path variables")
         print("...reverting to default path variables")
-
+"""
 import os
 os.makedirs(models_path, exist_ok=True)
 os.makedirs(output_path, exist_ok=True)
@@ -91,7 +86,7 @@ print(f"output_path: {output_path}")
 # !! }}
 #@markdown **Setup Environment**
 
-setup_environment = True #@param {type:"boolean"}
+setup_environment = False #@param {type:"boolean"}
 print_subprocess = False #@param {type:"boolean"}
 
 if setup_environment:
@@ -99,14 +94,14 @@ if setup_environment:
     print("Setting up environment...")
     start_time = time.time()
     all_process = [
-        ['pip', 'install', 'torch==1.12.1+cu113', 'torchvision==0.13.1+cu113', '--extra-index-url', 'https://download.pytorch.org/whl/cu113'],
-        ['pip', 'install', 'omegaconf==2.2.3', 'einops==0.4.1', 'pytorch-lightning==1.7.4', 'torchmetrics==0.9.3', 'torchtext==0.13.1', 'transformers==4.21.2', 'kornia==0.6.7'],
-        ['git', 'clone', 'https://github.com/deforum/stable-diffusion'],
-        ['pip', 'install', '-e', 'git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers'],
-        ['pip', 'install', '-e', 'git+https://github.com/openai/CLIP.git@main#egg=clip'],
-        ['pip', 'install', 'accelerate', 'ftfy', 'jsonmerge', 'matplotlib', 'resize-right', 'timm', 'torchdiffeq'],
-        ['git', 'clone', 'https://github.com/shariqfarooq123/AdaBins.git'],
-        ['git', 'clone', 'https://github.com/isl-org/MiDaS.git'],
+        # ['pip', 'install', 'torch==1.12.1+cu113', 'torchvision==0.13.1+cu113', '--extra-index-url', 'https://download.pytorch.org/whl/cu113'],
+        # ['pip', 'install', 'omegaconf==2.2.3', 'einops==0.4.1', 'pytorch-lightning==1.7.4', 'torchmetrics==0.9.3', 'torchtext==0.13.1', 'transformers==4.21.2', 'kornia==0.6.7'],
+        # ['git', 'clone', 'https://github.com/deforum/stable-diffusion'],
+        # ['pip', 'install', '-e', 'git+https://github.com/CompVis/taming-transformers.git@master#egg=taming-transformers'],
+        # ['pip', 'install', '-e', 'git+https://github.com/openai/CLIP.git@main#egg=clip'],
+        # ['pip', 'install', 'accelerate', 'ftfy', 'jsonmerge', 'matplotlib', 'resize-right', 'timm', 'torchdiffeq'],
+        # ['git', 'clone', 'https://github.com/shariqfarooq123/AdaBins.git'],
+        # ['git', 'clone', 'https://github.com/isl-org/MiDaS.git'],
         ['git', 'clone', 'https://github.com/MSFTserver/pytorch3d-lite.git'],
     ]
     for process in all_process:
@@ -916,7 +911,7 @@ custom_checkpoint_path = "" #@param {type:"string"}
 
 load_on_run_all = True #@param {type: 'boolean'}
 half_precision = True # check
-check_sha256 = True #@param {type:"boolean"}
+check_sha256 = False #@param {type:"boolean"}
 
 model_map = {
     "sd-v1-4-full-ema.ckpt": {
@@ -1089,7 +1084,7 @@ if load_on_run_all and ckpt_valid:
 def DeforumAnimArgs():
 
     #@markdown ####**Animation:**
-    animation_mode = 'None' #@param ['None', '2D', '3D', 'Video Input', 'Interpolation'] {type:'string'}
+    animation_mode = '2D' #@param ['None', '2D', '3D', 'Video Input', 'Interpolation'] {type:'string'}
     max_frames = 1000 #@param {type:"number"}
     border = 'replicate' #@param ['wrap', 'replicate'] {type:'string'}
 
@@ -1824,14 +1819,17 @@ else:
 skip_video_for_run_all = True #@param {type: 'boolean'}
 fps = 12 #@param {type:"number"}
 #@markdown **Manual Settings**
-use_manual_settings = False #@param {type:"boolean"}
-image_path = "/content/drive/MyDrive/AI/StableDiffusion/2022-09/20220903000939_%05d.png" #@param {type:"string"}
-mp4_path = "/content/drive/MyDrive/AI/StableDiffu'/content/drive/MyDrive/AI/StableDiffusion/2022-09/sion/2022-09/20220903000939.mp4" #@param {type:"string"}
+use_manual_settings = True #@param {type:"boolean"}
+# image_path = "/content/drive/MyDrive/AI/StableDiffusion/2022-09/20220903000939_%05d.png" #@param {type:"string"}
+image_path = "output/2022-12/StableFun/20220903000939_%05d.png" #@param {type:"string"}
+mp4_path = "output/2022-12/StableFun/20220903000939.mp4" #@param {type:"string"}
+
+# mp4_path = "/content/drive/MyDrive/AI/StableDiffu'/content/drive/MyDrive/AI/StableDiffusion/2022-09/sion/2022-09/20220903000939.mp4" #@param {type:"string"}
 render_steps = True  #@param {type: 'boolean'}
 path_name_modifier = "x0_pred" #@param ["x0_pred","x"]
 
 
-if skip_video_for_run_all == True:
+if skip_video_for_run_all == False:
     print('Skipping video creation, uncheck skip_video_for_run_all if you want to run it')
 else:
     import os
